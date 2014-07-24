@@ -1058,7 +1058,7 @@ void data2SegFormat(string clean, string seg, string tobecondata);
 void condata()
 {
 	string dir1("D:\\data\\clean\\");
-	string dir2("F:\\resdata\\optm\\outer\\");
+	string dir2("F:\\cleanres\\inner\\");
 	string dir3("D:\\data\\segmention\\");
 	vector<string> files1;
 	vector<string> files2;
@@ -1067,8 +1067,8 @@ void condata()
 	GetFileNameFromDir(dir2, files2);
 	GetFileNameFromDir(dir3, files3);
 	vector<string>::iterator iterFile1 = files1.begin();
-	vector<string>::iterator iterFile2=files2.begin();
-	vector<string>::iterator iterFile3=files3.begin();
+	vector<string>::iterator iterFile2 = files2.begin();
+	vector<string>::iterator iterFile3 = files3.begin();
 	for (iterFile2 = files2.begin() ; iterFile2 != files2.end(); iterFile2++)
 	{
 
@@ -1097,7 +1097,7 @@ void data2SegFormat(string clean,string seg,string tobecondata)
 
 	char cleandir[100] ="D:\\data\\clean\\";
 	char segdir[100] ="D:\\data\\segmention\\";
-	char tobecondatadir[100] ="F:\\resdata\\optm\\outer\\";
+	char tobecondatadir[100] ="F:\\cleanres\\inner\\";
 	char dirbody1[100];
 	strcpy(dirbody1, clean.c_str());
 	strcat(cleandir, dirbody1);
@@ -1142,26 +1142,57 @@ void data2SegFormat(string clean,string seg,string tobecondata)
 	{
 		printf("open fail");
 	}
-	float *data = new float[lx*ly*lz];
-	//float2uchar()
-
-	fread((char *)data, sizeof(float), size, p);
-	unsigned char *uchardata = new unsigned char[size];
-	for (size_t i = 0; i < size; i++)
+	int datatype = 2;
+	if (datatype = 1)
 	{
-		float val = (data[i]);
-		//if (val != 0)
-		//	cout << val << endl;
-		uchardata[i] = (unsigned char)(val);
+		float *data = new float[lx*ly*lz];
+		//float2uchar()
+
+		fread((char *)data, sizeof(float), size, p);
+		unsigned char *uchardata = new unsigned char[size];
+		for (size_t i = 0; i < size; i++)
+		{
+			float val = (data[i]);
+			//if (val != 0)
+			//	cout << val << endl;
+			uchardata[i] = (unsigned char)(val);
+
+		}
+		delete[] data;
+
+		fclose(p);
+		printf("data to be converted read is ok\n");
+
+		FILE *w2 = fopen(outputdir, "a+");
+		fwrite(uchardata, sizeof(unsigned char), size, w2);
 
 	}
-	delete[] data;
+	else if (datatype==2)
+	{
+		//float *data = new float[lx*ly*lz];
+		//float2uchar()
+		unsigned char *data = new unsigned char[size];
+		fread((char *)data, sizeof(unsigned char), size, p);
+		
+		//for (size_t i = 0; i < size; i++)
+		//{
+		//	float val = (data[i]);
+		//	//if (val != 0)
+		//	//	cout << val << endl;
+		//	uchardata[i] = (unsigned char)(val);
 
-   	fclose(p);
-	printf("data to be converted read is ok\n");
+		//}
+		//delete[] data;
 
-	FILE *w2 = fopen(outputdir,"a+");
-	fwrite(uchardata, sizeof(unsigned char), size, w2);
+		fclose(p);
+		printf("data to be converted read is ok\n");
+
+		FILE *w2 = fopen(outputdir, "a+");
+		fwrite(data, sizeof(unsigned char), size, w2);
+
+	}
+	
+
 
 
 
@@ -1213,13 +1244,13 @@ Point* chekneghbor(Point *p,Raw *src)
 }
 void removeOutliers(Raw * origincolon,Raw *res)
 {
-	int first=0;
+	int first = 0;
 	size_t i = 0;
 	size_t j = 0;
 	size_t k = 0;
 	vector< vector<Point> > list(1000);
 	int num = 0;
-	while ( i <= origincolon->getXsize()  && j <= origincolon->getYsize() - 1 && k <= origincolon->getZsize() - 1)
+	while (i <= origincolon->getXsize() && j <= origincolon->getYsize() - 1 && k <= origincolon->getZsize() - 1)
 	{
 		bool flag = true;
 		//find the first point
@@ -1232,7 +1263,7 @@ void removeOutliers(Raw * origincolon,Raw *res)
 					if (origincolon->get(i, j, k) == 100)
 
 					{
-						origincolon->put(i,j,k,200);
+						origincolon->put(i, j, k, 200);
 						flag = false;
 						//cout << origincolon->get(i, j, k) << endl;
 						//break;
@@ -1240,10 +1271,10 @@ void removeOutliers(Raw * origincolon,Raw *res)
 				}
 			}
 		}
-		if (origincolon->get(i, j, k) == 100)
+		if (flag == false)
 		{
 			std::stack<Point> path;
-			path.push(Point(i,j,k,100));
+			path.push(Point(i, j, k, 200));
 			//path.push(*chekneghbor(&Point(i, j, k, 100), origincolon));
 			while (!path.empty())
 			{
@@ -1251,8 +1282,8 @@ void removeOutliers(Raw * origincolon,Raw *res)
 				while (temp != 0)
 				{
 					Point *val = chekneghbor(&path.top(), origincolon);
-					 temp = val->value;
-					if (temp!=0)
+					temp = val->value;
+					if (temp != 0)
 					{
 						path.push(*val);
 						list[num].push_back(path.top());
@@ -1265,7 +1296,7 @@ void removeOutliers(Raw * origincolon,Raw *res)
 			}
 
 
-			cout << num++ << endl;;
+			cout << num++ << endl;
 
 
 		}
@@ -1275,53 +1306,54 @@ void removeOutliers(Raw * origincolon,Raw *res)
 	int maxlistnum = 0;
 	int num2maxnum = -1;
 	int max = -1;
-	for (size_t kk = 0; kk < num; kk++)
-	{
-		
-		
-		if (max < list[kk].size())
-		{
-			maxlistnum = kk;
-
-		}
-		else if (list[kk].size()>500000)
-		{
-			num2maxnum = kk;
-		}
-
-	}
 	for (size_t i = 0; i < res->getXsize(); i++)
 	{
-		for (size_t j = 0;  j < res->getYsize();  j++)
+		for (size_t j = 0; j < res->getYsize(); j++)
 		{
 			for (size_t k = 0; k < res->getZsize(); k++)
 			{
-				res->put(i, j, k,0);
+				res->put(i, j, k, 0);
 
 			}
 
 		}
 
 	}
-	cout << list[maxlistnum].size() << endl;
-	for (vector<Point>::iterator it = list[maxlistnum].begin(); it != list[maxlistnum].end();++it)
+	for (size_t kk = 0; kk < num; kk++)
 	{
-		
-		res->put(it->x, it->y, it->z, it->value);
+
+
+		if (max < list[kk].size())
+		{
+			maxlistnum = kk;
+
+		}
+		else if (list[kk].size() > 16000)
+		{
+			num2maxnum = kk;
+			for (vector<Point>::iterator it = list[kk].begin(); it != list[kk].end(); ++it)
+			{
+
+				res->put(it->x, it->y, it->z, it->value);
+			}
+		}
+
+
 	}
-	
-	if (num2maxnum>=0)
+
+	cout << list[maxlistnum].size() << endl;
+	cout << list[num2maxnum].size() << endl;
+
+
+	if (maxlistnum >= 0)
 	{
-		for (vector<Point>::iterator it = list[num2maxnum].begin(); it != list[num2maxnum].end(); ++it)
+		for (vector<Point>::iterator it = list[maxlistnum].begin(); it != list[maxlistnum].end(); ++it)
 		{
 
 			res->put(it->x, it->y, it->z, it->value);
 		}
 
 	}
-
-   
-
 
 	
 
@@ -1334,7 +1366,8 @@ void removeOutliers(Raw * origincolon,Raw *res)
 void cleanraw()
 {
 	string cleandir("D:\\data\\clean\\");
-	string noisydir("F:\\resdata\\optm\\outer\\");
+	string noisydir("F:\\resdata\\optm\\inner\\");
+	//string noisydir("E:\\res\\thickness\\");
 	vector<string> files1;
 	vector<string> files2;
 	GetFileNameFromDir(cleandir,files1);
@@ -1381,10 +1414,25 @@ void cleanraw()
 			res = new Raw(l, m, n);
 
 		}
+			break;
 		case 2:
 		{
+			short * indata = test->readStream(itclean->c_str(), &l, &m, &n);
+			delete[] indata;
+			unsigned char * buf = new unsigned char[l*m*n];
 
+			FILE *p = fopen(itnoisy->c_str(), "r");
+			fread(buf, sizeof(unsigned char), l*m*n, p);
+			PIXTYPE *data = new PIXTYPE[l*m*n];
+			for (size_t i = 0; i < l*m*n; i++)
+			{
+				data[i] = (PIXTYPE)buf[i];
+
+			}
+			origincolon = new Raw(l, m, n, data);
+			res = new Raw(l, m, n);
 		}
+			break;
 		default:
 		{
 
@@ -1403,5 +1451,77 @@ void cleanraw()
 
 	}
 	
+}
+void computeHistgram(Raw *polyp)
+{
+	PIXTYPE max = -1000;
+	PIXTYPE min = 1000;
+	for (size_t i = 0; i < polyp->size(); i++)
+	{
+		PIXTYPE val = polyp->getXYZ(i);
+		max < val ? max = val : max = max;
+		min > val ? min = val : min = min;
+
+
+	}
+	int delta = (max - min) / 10;
+	int *a = new int[10];
+	for (size_t i = 0; i < 10; i++)
+	{
+		a[i] = 0;
+
+	}
+	for (size_t i = 0; i < polyp->size(); i++)
+	{
+		PIXTYPE val = polyp->getXYZ(i);
+		a[(int)(val - min)/delta-1]++;
+
+	}
+	ofstream os("E:\\statistics\\hist.txt",ios::app);
+	os << max << " ";
+	os << min << " ";
+	for (size_t i = 0; i < 10; i++)
+	{
+		os << a[i] << " ";
+
+	}
+	os << endl;
+	
+
+}
+void testpolyphist()
+{
+
+	string dir2("E:\\statistics\\1\\");//D:\swfdata20140420res\polyp\regiongrowingfillnull
+
+	vector<string> files2;
+
+	GetFileNameFromDir(dir2, files2);
+
+	vector<string>::iterator iterFile2;
+	int i = 0;
+	for (iterFile2 = files2.begin(); iterFile2 != files2.end(); iterFile2++)
+	{
+
+
+		iterFile2->assign(iterFile2->substr(dir2.size() + 1));
+
+		cout << *iterFile2 << endl;
+		char *pt = "single_well";
+		int l = 0, m = 0, n = 0, l1 = 0, l2 = 0, iter_outer = 50;
+		RawImage test;
+		char dirhead[200] = "E:\\statistics\\1\\";
+		char dirbody[100];
+		strcpy(dirbody, iterFile2->c_str());
+ 		cout << "dirbody" << dirbody << endl;
+		strcat(dirhead, dirbody);
+		cout << "dirhead" << dirhead << endl;
+		//RawImage test;
+		PIXTYPE * buf = new PIXTYPE[512*512*50];
+		test.readImage2(buf, dirhead, 512 * 512 * 50);
+		Raw *polyp = new Raw(512,512,50,buf);
+		computeHistgram(polyp);
+
+	}
 }
 #endif

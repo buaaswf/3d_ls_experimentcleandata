@@ -250,7 +250,8 @@ int main(int argc,char **argv)
 	
 	//testsesmic();
 	//condata();
-	cleanraw();
+	testpolyphist();
+	//cleanraw();
 	system("pause");
 	return 0;
 
