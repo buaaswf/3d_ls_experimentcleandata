@@ -1328,7 +1328,7 @@ void removeOutliers(Raw * origincolon,Raw *res)
 			maxlistnum = kk;
 
 		}
-		else if (list[kk].size() > 16000)
+		else if (list[kk].size() > 1600)
 		{
 			num2maxnum = kk;
 			for (vector<Point>::iterator it = list[kk].begin(); it != list[kk].end(); ++it)
@@ -1363,6 +1363,123 @@ void removeOutliers(Raw * origincolon,Raw *res)
 
 
 }
+void removeOutliersv2(Raw * origincolon, Raw *res)
+{
+	int first = 0;
+	size_t i = 0;
+	size_t j = 0;
+	size_t k = 0;
+	vector< vector<Point> > list(1000);
+	int num = 0;
+	while (i <= origincolon->getXsize() && j <= origincolon->getYsize() && k <= origincolon->getZsize())
+	{
+		bool flag = true;
+		//find the first point
+		for (i = 0; i < origincolon->getXsize() && flag; i++)
+		{
+			for (j = 0; j < origincolon->getYsize() && flag; j++)
+			{
+				for (k = 0; k < origincolon->getZsize() && flag; k++)
+				{
+					if (origincolon->get(i, j, k) == 100)
+
+					{
+						origincolon->put(i, j, k, 200);
+						flag = false;
+						//cout << origincolon->get(i, j, k) << endl;
+						//break;
+					}
+				}
+			}
+		}
+		if (flag == false)
+		{
+			std::stack<Point> path;
+			path.push(Point(i, j, k, 200));
+			//path.push(*chekneghbor(&Point(i, j, k, 100), origincolon));
+			while (!path.empty())
+			{
+				PIXTYPE temp = 1;
+				while (temp != 0)
+				{
+					Point *val = chekneghbor(&path.top(), origincolon);
+					temp = val->value;
+					if (temp != 0)
+					{
+						path.push(*val);
+						list[num].push_back(path.top());
+
+					}
+
+					//path.push(*val, origincolon));
+				}
+				path.pop();
+			}
+
+
+			cout << num++ << endl;
+
+
+		}
+		else break;
+
+	}
+	int maxlistnum = 0;
+	int num2maxnum = -1;
+	int max = -1;
+	for (size_t i = 0; i < res->getXsize(); i++)
+	{
+		for (size_t j = 0; j < res->getYsize(); j++)
+		{
+			for (size_t k = 0; k < res->getZsize(); k++)
+			{
+				res->put(i, j, k, 0);
+
+			}
+
+		}
+
+	}
+	for (size_t kk = 0; kk < num; kk++)
+	{
+
+
+
+		if (list[kk].size() > 1600)
+		{
+			num2maxnum = kk;
+			for (vector<Point>::iterator it = list[kk].begin(); it != list[kk].end(); ++it)
+			{
+
+				res->put(it->x, it->y, it->z, it->value);
+			}
+		}
+
+
+	}
+
+	cout << list[maxlistnum].size() << endl;
+	cout << list[num2maxnum].size() << endl;
+
+
+	//if (maxlistnum >= 0)
+	//{
+	//	for (vector<Point>::iterator it = list[maxlistnum].begin(); it != list[maxlistnum].end(); ++it)
+	//	{
+
+	//		res->put(it->x, it->y, it->z, it->value);
+	//	}
+
+	//}
+
+
+
+
+
+
+
+
+}
 void cleanraw()
 {
 	string cleandir("D:\\data\\clean\\");
@@ -1372,9 +1489,9 @@ void cleanraw()
 	vector<string> files2;
 	GetFileNameFromDir(cleandir,files1);
 	GetFileNameFromDir(noisydir,files2);
-	vector<string>::iterator itclean = files1.begin();
+	vector<string>::iterator itclean = files1.begin()+2;
 	//vector<string>::iterator itnoisy = files2.begin();
-	for (vector<string>::iterator itnoisy = files2.begin(); itnoisy != files2.end(); itnoisy++,itclean++)
+	for (vector<string>::iterator itnoisy = files2.begin()+2; itnoisy != files2.end(); itnoisy++,itclean++)
 	{
 		int datatype = 1;
 		int l, m, n;
@@ -1442,7 +1559,7 @@ void cleanraw()
 		}
 
 
-		removeOutliers(origincolon, res);
+		removeOutliersv2(origincolon, res);
 		char outdir[100]="F:\\cleanres\\";
 		string filename (itnoisy->substr(noisydir.size()+1));
 		strcat(outdir,filename.c_str());

@@ -99,7 +99,7 @@ short * RawImage::readStream(char const *filename,int *l,int * m,int  * n)
 	int size=lx*ly*lz*sizeof(short);
 	*l=lx;*m=ly;*n=lz;
 	short *buf=new short[size];
-	file.seekg(24L+*l**m*(212-20),ios::beg);//+512*512*345*sizeof(short)
+	file.seekg(24L,ios::beg);//+512*512*345*sizeof(short)	  //+*l**m*(212-20)
 	file.read((char *)buf,size);
 	file.close();
 	return buf;
