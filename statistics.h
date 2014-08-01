@@ -1445,7 +1445,7 @@ void removeOutliersv2(Raw * origincolon, Raw *res)
 
 
 
-		if (list[kk].size() > 1600)
+		if (list[kk].size() > 46000)
 		{
 			num2maxnum = kk;
 			for (vector<Point>::iterator it = list[kk].begin(); it != list[kk].end(); ++it)
@@ -1483,90 +1483,99 @@ void removeOutliersv2(Raw * origincolon, Raw *res)
 void cleanraw()
 {
 	string cleandir("D:\\data\\clean\\");
-	string noisydir("F:\\resdata\\optm\\inner\\");
-	//string noisydir("E:\\res\\thickness\\");
+	//string noisydir("F:\\resdata\\optm\\inner\\");
+	string noisydir("E:\\res\\thickness\\");
 	vector<string> files1;
 	vector<string> files2;
 	GetFileNameFromDir(cleandir,files1);
 	GetFileNameFromDir(noisydir,files2);
-	vector<string>::iterator itclean = files1.begin()+2;
-	//vector<string>::iterator itnoisy = files2.begin();
-	for (vector<string>::iterator itnoisy = files2.begin()+2; itnoisy != files2.end(); itnoisy++,itclean++)
+	//int a[6] = {4,20,45,46,58,61};
+	int a[2] = { 43,50 };
+	for (size_t i = 0; i < 2; i++)
 	{
-		int datatype = 1;
-		int l, m, n;
-		cout << *itclean << endl;
-		cout << *itnoisy << endl;
-		//char dirclean[100];
-		//strcpy(dirclean,itclean._c_str());
-		//char dirnoisy[100];
-		//strcpy(dirnoisy,itnosiy._c_str());
-		/*
-		1\float
-		2\unsigned char
-		*/
-		Raw *origincolon = NULL;
-		Raw *res = NULL;
-		RawImage *test = new RawImage();
-		switch (datatype)
-		{
-		case 1:
-		{
-			short * indata = test->readStream(itclean->c_str(), &l, &m, &n);
-			delete[] indata;
-			float * buf = new float[l*m*n];	 
+		vector<string>::iterator itclean = files1.begin() + 1+a[i];
+		//vector<string>::iterator itnoisy = files2.begin();
+		//for (vector<string>::iterator itnoisy = files2.begin() + a[i]; itnoisy != files2.end(); itnoisy++, itclean++)	 //72:43 75:46 90:  51	101:58 109:62
+		//{
 
-			FILE *p = fopen(itnoisy->c_str(), "r");
-			fread(buf, sizeof(float), l*m*n, p);
-			origincolon = new Raw(l, m, n, buf);
-			//for (size_t i = 0; i < l*m*n; i++)
-			//{
-			//	if (origincolon->getXYZ(i) != 0)
-			//	{
-			//		cout << buf[i] << endl;
-
-			//	}
-
-			//}
-			res = new Raw(l, m, n);
-
-		}
-			break;
-		case 2:
-		{
-			short * indata = test->readStream(itclean->c_str(), &l, &m, &n);
-			delete[] indata;
-			unsigned char * buf = new unsigned char[l*m*n];
-
-			FILE *p = fopen(itnoisy->c_str(), "r");
-			fread(buf, sizeof(unsigned char), l*m*n, p);
-			PIXTYPE *data = new PIXTYPE[l*m*n];
-			for (size_t i = 0; i < l*m*n; i++)
+		vector<string>::iterator itnoisy = files2.begin() + a[i];
+			int datatype = 2;
+			int l, m, n;
+			cout << *itclean << endl;
+			cout << *itnoisy << endl;
+			//char dirclean[100];
+			//strcpy(dirclean,itclean._c_str());
+			//char dirnoisy[100];
+			//strcpy(dirnoisy,itnosiy._c_str());
+			/*
+			1\float
+			2\unsigned char
+			*/
+			Raw *origincolon = NULL;
+			Raw *res = NULL;
+			RawImage *test = new RawImage();
+			switch (datatype)
 			{
-				data[i] = (PIXTYPE)buf[i];
+			case 1:
+			{
+				short * indata = test->readStream(itclean->c_str(), &l, &m, &n);
+				delete[] indata;
+				float * buf = new float[l*m*n];
+
+				FILE *p = fopen(itnoisy->c_str(), "r");
+				fread(buf, sizeof(float), l*m*n, p);
+				origincolon = new Raw(l, m, n, buf);
+				//for (size_t i = 0; i < l*m*n; i++)
+				//{
+				//	if (origincolon->getXYZ(i) != 0)
+				//	{
+				//		cout << buf[i] << endl;
+
+				//	}
+
+				//}
+				res = new Raw(l, m, n);
 
 			}
-			origincolon = new Raw(l, m, n, data);
-			res = new Raw(l, m, n);
-		}
-			break;
-		default:
-		{
+				break;
+			case 2:
+			{
+				short * indata = test->readStream(itclean->c_str(), &l, &m, &n);
+				delete[] indata;
+				unsigned char * buf = new unsigned char[l*m*n];
+
+				FILE *p = fopen(itnoisy->c_str(), "r");
+				fread(buf, sizeof(unsigned char), l*m*n, p);
+				PIXTYPE *data = new PIXTYPE[l*m*n];
+				for (size_t i = 0; i < l*m*n; i++)
+				{
+					data[i] = (PIXTYPE)buf[i];
+
+				}
+				origincolon = new Raw(l, m, n, data);
+				res = new Raw(l, m, n);
+			}
+				break;
+			default:
+			{
 
 
-		}
-			break;
-		}
+			}
+				break;
+			}
 
 
-		removeOutliersv2(origincolon, res);
-		char outdir[100]="F:\\cleanres\\";
-		string filename (itnoisy->substr(noisydir.size()+1));
-		strcat(outdir,filename.c_str());
-		cout << outdir << endl;
-		test->writeImageName(*res, outdir);
+			removeOutliersv2(origincolon, res);
+			char outdir[100] = "F:\\cleanres\\";
+			string filename(itnoisy->substr(noisydir.size() + 1));
+			strcat(outdir, filename.c_str());
+			cout << outdir << endl;
+			test->writeImageName(*res, outdir);
+
+		//}
 
 	}
+
 	
 }
 void computeHistgram(Raw *polyp)
@@ -1606,38 +1615,89 @@ void computeHistgram(Raw *polyp)
 	
 
 }
+//take the polyp into consideration
+void computeHistgramreal(Raw *polyp,Raw *real)
+{
+	PIXTYPE max = -1000;
+	PIXTYPE min = 1000;
+	for (size_t i = 0; i < polyp->size(); i++)
+	{
+		PIXTYPE val = polyp->getXYZ(i);
+		max < val ? max = val : max = max;
+		min > val ? min = val : min = min;
+
+
+	}
+	int delta = (max - min) / 10;
+	int *a = new int[10];
+	for (size_t i = 0; i < 10; i++)
+	{
+		a[i] = 0;
+
+	}
+	for (size_t i = 0; i < polyp->size(); i++)
+	{
+		if (real->getXYZ(i)!=0)
+		{
+			PIXTYPE val = polyp->getXYZ(i);
+			a[(int)(val - min) / delta - 1]++;
+
+		}
+
+
+	}
+	ofstream os("E:\\statistics\\hist.txt", ios::app);
+	os << max << " ";
+	os << min << " ";
+	for (size_t i = 0; i < 10; i++)
+	{
+		os << a[i] << " ";
+
+	}
+	os << endl;
+
+
+}
 void testpolyphist()
 {
 
 	string dir2("E:\\statistics\\1\\");//D:\swfdata20140420res\polyp\regiongrowingfillnull
-
+	string dir3("D:\\swfdata20140420res\\polyp\\0731\\");
 	vector<string> files2;
-
+	vector<string> files3;
 	GetFileNameFromDir(dir2, files2);
-
+	GetFileNameFromDir(dir3,files3);
 	vector<string>::iterator iterFile2;
+	vector<string>::iterator iterFile3=files3.begin();
 	int i = 0;
 	for (iterFile2 = files2.begin(); iterFile2 != files2.end(); iterFile2++)
 	{
-
-
+		
 		iterFile2->assign(iterFile2->substr(dir2.size() + 1));
-
 		cout << *iterFile2 << endl;
+		cout << *iterFile3 << endl;
 		char *pt = "single_well";
 		int l = 0, m = 0, n = 0, l1 = 0, l2 = 0, iter_outer = 50;
 		RawImage test;
 		char dirhead[200] = "E:\\statistics\\1\\";
+		char dirhead2[200] = "D:\\swfdata20140420res\\polyp\\0731\\";
 		char dirbody[100];
+		char dirbody2[100];
 		strcpy(dirbody, iterFile2->c_str());
+		strcpy(dirbody2,iterFile3->c_str());
  		cout << "dirbody" << dirbody << endl;
 		strcat(dirhead, dirbody);
+		strcat(dirhead2,dirbody2);
 		cout << "dirhead" << dirhead << endl;
 		//RawImage test;
 		PIXTYPE * buf = new PIXTYPE[512*512*50];
+		PIXTYPE *buf2 = new PIXTYPE[512*512*50];
 		test.readImage2(buf, dirhead, 512 * 512 * 50);
+		test.readImage2(buf2, dirhead, 512 * 512 * 50);
 		Raw *polyp = new Raw(512,512,50,buf);
-		computeHistgram(polyp);
+		Raw *realpolyp = new Raw(512,512,50,buf2);
+		computeHistgramreal(polyp, realpolyp);
+		iterFile3++;
 
 	}
 }
