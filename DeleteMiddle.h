@@ -1,3 +1,7 @@
+#ifndef ____DELETEMIDDLE_______
+#define ____DELETEMIDDLE_______
+
+//#include "statistics.h"
 
 /************************************************************************/
 /* need to impl the distance transform                                  */
@@ -90,3 +94,5 @@ void deleteMiddle(int argc,string dir)
 
 
 }
+
+#endif
