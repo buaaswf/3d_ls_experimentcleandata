@@ -239,6 +239,7 @@ int main(int argc,char **argv)
 	//	//roc(*iterFile2,);
 	//	//rate(*iterFile2);
 	//}
+	//20141005 for two regions its histgram thickness:inner,thickness distance,origin
 	//testhistgram();
 	//deleteMiddle(argc,"");
 	//test();//delete dirty success
@@ -249,8 +250,8 @@ int main(int argc,char **argv)
 	//testcolontest();
 	
 	//testsesmic();
-	//condata();
-	testpolyphist();
+	condata();
+	//testpolyphist();
 	//cleanraw();
 	system("pause");
 	return 0;

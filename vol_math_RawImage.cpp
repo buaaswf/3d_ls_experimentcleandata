@@ -277,7 +277,7 @@ void RawImage::writeMRI(Raw &destImg, char *name)
 void RawImage::writeImageName(Raw &destImg, char *name)
 {
 	FILE *p=fopen(name,"wb");
-	//unsigned char *data=new unsigned char[destImg.size()];
+	unsigned char *data=new unsigned char[destImg.size()];
 	//float*data = new float[destImg.size()];
 	//memcpy(data,destImg.getdata(),sizeof(PIXTYPE)*destImg.size());
 	

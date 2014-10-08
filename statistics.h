@@ -55,11 +55,12 @@
 */
 //people divide region dir
 //#define input1 "D:\\segdata\\people\\thickness\\edt\\"
-#define input1 "L:\\sdfdata2\\inner\\"
+//#define input1 "L:\\sdfdata2\\inner\\"
+#define input1 "E:\\SEG\\32-3124inner-outer\\edt\\"
 //#define input2 "K:\\sdf\\volume\\clean\\clean\\ep\\clean\\"
-#define input3 "D:\\segdata\\people\\skeleton\\"
+#define input3 "E:\\SEG\\skeleton\\"
 // people /people divide region dir
-#define  input2 "K:\\sdf\\volume\\clean\\clean\\polyp\\"
+#define  input2 "D:\\data\\clean\\doctor\\"
 using namespace cimg_library;
 using namespace std;
 //////////////////////////////////////////////////////////////////////////
@@ -1057,9 +1058,10 @@ void directdivideregion()
 void data2SegFormat(string clean, string seg, string tobecondata);
 void condata()
 {
-	string dir1("D:\\data\\clean\\");
-	string dir2("F:\\cleanres\\inner\\");
-	string dir3("D:\\data\\segmention\\");
+	string dir1("D:\\data\\clean\\cleangac\\");
+	//string dir2("F:\\cleanres\\inner\\");
+	string dir2("M:\\3000GAC\\inner\\convertdata\\");
+	string dir3("D:\\data\\segmention\\gac\\");
 	vector<string> files1;
 	vector<string> files2;
 	vector<string> files3;
@@ -1095,9 +1097,9 @@ void data2SegFormat(string clean,string seg,string tobecondata)
 {
 
 
-	char cleandir[100] ="D:\\data\\clean\\";
-	char segdir[100] ="D:\\data\\segmention\\";
-	char tobecondatadir[100] ="F:\\cleanres\\inner\\";
+	char cleandir[100] ="D:\\data\\clean\\cleangac\\";
+	char segdir[100] ="D:\\data\\segmention\\gac\\";
+	char tobecondatadir[100] ="M:\\3000GAC\\inner\\convertdata\\";
 	char dirbody1[100];
 	strcpy(dirbody1, clean.c_str());
 	strcat(cleandir, dirbody1);
@@ -1212,22 +1214,30 @@ Point* chekneghbor(Point *p,Raw *src)
 {
 	Point *res = new Point();
 	bool flag = true;
+
+
 	for (size_t l = p->x - 1; l <= p->x + 1 && flag; l++)
 	{
 		for (size_t m = p->y - 1; m <= p->y + 1 && flag; m++)
 		{
 			for (size_t n = p->z - 1; n <= p->z + 1 && flag; n++)
 			{
-				if (src->get(l, m, n) == 100)
+				if ((int)l<src->getXsize() && l>0 && (int)m<src->getYsize()&&m>0 && n>0 && (int)n<src->getZsize())
 				{
-					res->x = l;
-					res->y = m;
-					res->z = n;
-					res->value = 200;
-					src->put(l, m, n,200);
+					if (src->get(l, m, n) == 100)
+					{
+
+						res->x = l;
+						res->y = m;
+						res->z = n;
+						res->value = 200;
+						src->put(l, m, n, 200);
 						flag = false;
-					
+
+					}
+
 				}
+
 				
 
 
@@ -1482,24 +1492,28 @@ void removeOutliersv2(Raw * origincolon, Raw *res)
 }
 void cleanraw()
 {
-	string cleandir("D:\\data\\clean\\");
+	//if data is unsigned char -->2
+	//if data is float --->1
+	// input clean data for  size
+	//input data need to be cleaned
+	string cleandir("D:\\data\\clean\\cleangac\\");
 	//string noisydir("F:\\resdata\\optm\\inner\\");
-	string noisydir("E:\\res\\thickness\\");
+	string noisydir("M:\\3000GAC\\inner\\convertdata\\");
 	vector<string> files1;
 	vector<string> files2;
 	GetFileNameFromDir(cleandir,files1);
 	GetFileNameFromDir(noisydir,files2);
 	//int a[6] = {4,20,45,46,58,61};
-	int a[2] = { 43,50 };
-	for (size_t i = 0; i < 2; i++)
+	//int a[2] = { 43,50 };
+	for (size_t i = 0; i < 8; i++)
 	{
-		vector<string>::iterator itclean = files1.begin() + 1+a[i];
-		//vector<string>::iterator itnoisy = files2.begin();
-		//for (vector<string>::iterator itnoisy = files2.begin() + a[i]; itnoisy != files2.end(); itnoisy++, itclean++)	 //72:43 75:46 90:  51	101:58 109:62
-		//{
+		//vector<string>::iterator itclean = files1.begin() + 1+a[i];
+		//vector<string>::iterator itnoisy = files2.begin() + a[i];
+		vector<string>::iterator itclean = files1.begin() + i;
+		vector<string>::iterator itnoisy = files2.begin() + i;
 
-		vector<string>::iterator itnoisy = files2.begin() + a[i];
-			int datatype = 2;
+		
+			int datatype = 1;
 			int l, m, n;
 			cout << *itclean << endl;
 			cout << *itnoisy << endl;
