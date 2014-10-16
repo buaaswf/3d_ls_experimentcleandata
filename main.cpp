@@ -170,8 +170,8 @@ void testsesmic()
 }
 void testhistgram()
 {
-	//HUandThickness();
-	directdivideregion();
+	HUandThickness();
+	//directdivideregion();
 }
 void rate(string dir)
 {
@@ -240,7 +240,7 @@ int main(int argc,char **argv)
 	//	//rate(*iterFile2);
 	//}
 	//20141005 for two regions its histgram thickness:inner,thickness distance,origin
-	//testhistgram();
+	testhistgram();
 	//deleteMiddle(argc,"");
 	//test();//delete dirty success
 	//cout<<endl;
@@ -250,7 +250,7 @@ int main(int argc,char **argv)
 	//testcolontest();
 	
 	//testsesmic();
-	condata();
+	//condata();
 	//testpolyphist();
 	//cleanraw();
 	system("pause");

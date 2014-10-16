@@ -56,11 +56,11 @@
 //people divide region dir
 //#define input1 "D:\\segdata\\people\\thickness\\edt\\"
 //#define input1 "L:\\sdfdata2\\inner\\"
-#define input1 "E:\\SEG\\32-3124inner-outer\\edt\\"
+#define input1 "M:\\5000-58-116\\auto\\3000edtGAC\\"
 //#define input2 "K:\\sdf\\volume\\clean\\clean\\ep\\clean\\"
-#define input3 "E:\\SEG\\skeleton\\"
+#define input3 "M:\\5000-58-116\\auto\\skeleton\\3000\\" 
 // people /people divide region dir
-#define  input2 "D:\\data\\clean\\doctor\\"
+#define  input2 "M:\\clean\\3000\\"
 using namespace cimg_library;
 using namespace std;
 //////////////////////////////////////////////////////////////////////////
@@ -896,7 +896,7 @@ void HUandThickness()
 		queue<Point>q;
 		vector<Point> c;
 		DivideRegion *dr=new DivideRegion(q,skeleton,c);
-		//dr->putskletoninorders1();//region2
+		dr->putskletoninorders1();//region2
 		//dr->putskeletoninorders3s2(dr->center.front(),dr->center.back());
 		//dr->wirtecenterline((int)skeleton->getXsize(),(int)skeleton->getYsize(),(int)skeleton->getZsize());
 		//dr->DivideRegionv2(skeleton,hu);//region 2
@@ -1144,7 +1144,7 @@ void data2SegFormat(string clean,string seg,string tobecondata)
 	{
 		printf("open fail");
 	}
-	int datatype = 2;
+	int datatype = 1;
 	if (datatype = 1)
 	{
 		float *data = new float[lx*ly*lz];

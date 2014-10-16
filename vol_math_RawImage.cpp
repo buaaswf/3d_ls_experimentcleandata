@@ -74,7 +74,7 @@ void RawImage::readImage2(float * buf,char const *file ,int size)
 		printf("open fail");
 	}
 	//unsigned char * unsignedbuf=new unsigned char[size];
-	//fseek(op,281*481*500L,SEEK_SET);
+	fseek(op,512L,SEEK_SET);
 	fread(buf,sizeof(float),size,op);
 
 	fclose(op);
@@ -97,7 +97,7 @@ short * RawImage::readStream(char const *filename,int *l,int * m,int  * n)
 	file.read(reinterpret_cast<char *>(&rate),sizeof(float));
 	cout<<rate<<endl;
 	int size=lx*ly*lz*sizeof(short);
-	*l=lx;*m=ly;*n=lz;
+	*l=lx;*m=ly;*n=lz-1;
 	short *buf=new short[size];
 	file.seekg(24L,ios::beg);//+512*512*345*sizeof(short)	  //+*l**m*(212-20)
 	file.read((char *)buf,size);
